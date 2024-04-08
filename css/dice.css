@@ -1,0 +1,97 @@
+.column {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    height: 200px;
+    padding: 50px;
+    background: black;
+    border: 1px solid red;
+    border-radius: 40px;
+}
+
+.dice .row {
+    display: flex;
+}
+
+.dice .center {
+    justify-content: center;
+}
+
+.dice .left {
+    justify-content: right;
+}
+
+.dice .right {
+    justify-content: right;
+}
+
+.dice .between {
+    justify-content: space-between;
+}
+
+.dice .point {
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    background: white;
+}
+
+.dice {
+    background: black;
+    margin: 50px 200px;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: 0.3s transform;
+    zoom: 0.3;
+}
+
+.dice__1 {
+    transform: rotateY(185deg) rotateX(155deg) rotateZ(315deg) !important;
+}
+
+.dice__2 {
+    transform: rotateY(55deg) rotateX(135deg) rotateZ(315deg) !important;
+}
+
+.dice__4 {
+    transform: rotateY(55deg) rotateX(135deg) rotateZ(405deg) !important;
+}
+
+.dice__3 {
+    transform: rotateY(55deg) rotateX(135deg) rotateZ(135deg) !important;
+}
+
+.dice__5 {
+    transform: rotateY(55deg) rotateX(135deg) rotateZ(225deg) !important;
+}
+
+.dice__6 {
+    transform: rotateY(0deg) rotateX(205deg) rotateZ(125deg) !important;
+}
+
+.one {
+    transform: translateZ(100px);
+}
+
+.six {
+    transform: translateZ(-100px);
+}
+
+.two {
+    transform: translateX(-100px) rotateY(-90deg);
+}
+
+.three {
+    transform: translateX(100px) rotateY(90deg);
+}
+
+.four {
+    transform: translateY(100px) rotateX(90deg);
+}
+
+.five {
+    transform: translateY(-100px) rotateX(-90deg);
+}

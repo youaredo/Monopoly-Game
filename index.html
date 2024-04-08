@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/dice.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.js"></script>
+    <script>
+        const {createApp, ref, reactive, watch} = Vue;
+    </script>
+</head>
+<body>
+<div id="app">
+    <div class="page flex-xl-column" :class="{'active':page === 'home'}">
+        <button class="btn btn-primary w-50 mb-5" @click="toMapList('mapList')">Map List</button>
+        <button class="btn btn-primary w-50" @click="changePage('diffSelect')">Construct map</button>
+    </div>
+
+    <div class="page flex-xl-column" :class="{'active':page === 'diffSelect'}">
+        <button class="btn btn-primary w-50 mb-5" v-for="(item,name) in conf.levelConf" @click="toEdit(name)">
+            {{name == 'easy' ? 'Basic' : ''}} {{name == 'normal' ? 'Medium' : ''}} {{name == 'hard' ? 'Advanced' : ''}}
+        </button>
+        <button class="btn btn-primary w-50 mb-5" @click="backHome">Back to Home</button>
+    </div>
+
+    <div class="page" :class="{'active':page === 'edit'}">
+        <div class="container">
+            <div v-if="scene">
+                <div v-for="(item,name) in scene.road" :class="item.className" class="item" :style="item.style"
+                     @click="scene.clickEvent(item)">
+                    <div v-if="item.isProperty">
+                        <div class="building">
+                            <img :src="'./images/' + item.img" alt="" :style="item.itemStyle">
+                        </div>
+
+                        <div class="message">
+                            <div class="price" :style="item.itemStyle">${{item.conf.price}}</div>
+                            <div class="level" :style="item.itemStyle"></div>
+                            <div class="name mt-1" :style="item.itemStyle">{{item.name}}</div>
+                        </div>
+                    </div>
+                    <div v-else :style="item.itemStyle">
+                        <img v-if="item.img" :src="'./images/' + item.img" alt="">
+                        <span class="mt-2">{{item.type}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <button class="btn btn-primary w-100 mb-3" :class="{btnActive:item == tool}" v-for="item in conf.tools"
+                    @click="changeTool(item)">{{item}}
+            </button>
+            <button class="btn btn-primary w-100 mb-3" @click="exportScene">Save Map</button>
+            <button class="btn btn-primary w-100 mb-3" :disabled="!isSetAll()" @click="randomPlace">Random</button>
+            <button class="btn btn-primary w-100 mb-3" @click="randomPrice">Random Price</button>
+            <button class="btn btn-primary w-100 mb-3" @click="backHome">Back to Home</button>
+        </div>
+    </div>
+    <div class="page flex-xl-column" :class="{'active':page === 'mapList'}">
+        <div class="container overflow-auto flex-xl-wrap">
+                <span class="card mr-4" v-for="(item,index) in mapList">
+                    <div class="card-img-top">
+                        <div class="smallMap" :class="item.level">
+                            <div v-for="road in item.road" :class="road.className" class="item" :style="road.style">
+                            <div v-if="road.isProperty">
+                                <div class="building">
+                                    <img :src="'./images/' + road.img" alt="" :style="item.itemStyle">
+                                </div>
+
+                                <div class="message">
+                                    <div class="price" :style="item.itemStyle">${{road.conf.price}}</div>
+                                    <div class="level" :style="item.itemStyle"></div>
+                                    <div class="name mt-1" :style="item.itemStyle">{{road.name}}</div>
+                                </div>
+                            </div>
+                            <div v-else :style="item.itemStyle">
+                                <img v-if="road.img" :src="'./images/' + road.img" alt="">
+                                <span class="mt-2">{{road.type}}</span>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li>InitialMoney: ${{item.initialMoney}}</li>
+                        <li>Salary: ${{item.salary}}</li>
+                        <li>Complexity: {{item.level == 'easy' ? 'Basic' : ''}} {{item.level == 'normal' ? 'Medium' : ''}} {{item.level == 'hard' ? 'Advanced' : ''}}</li>
+                        <button class="btn btn-outline-primary w-25" @click="toGame(index)">Start</button>
+                    </ul>
+                </span>
+        </div>
+        <button class="btn btn-primary w-25" @click="backHome">Back to Home</button>
+    </div>
+    <div class="page" :class="{'active':page === 'game'}" v-if="StartGame">
+        <div class="container">
+            <div v-if="scene">
+                <div v-for="(item,name) in scene.road" :class="item.className" class="item" :style="item.style"
+                     @click="scene.clickEvent(item)">
+                    <div v-if="item.isProperty">
+                        <div class="building special" :class="item.bgClass">
+                            <img :src="'./images/' + item.img" alt="" :style="item.itemStyle">
+
+                            <div v-for="circle of item.circleList" :class="item.bgClass + ' ' + circle.className"
+                                 :ref="circle.setDom.bind(circle)"></div>
+                        </div>
+
+                        <div class="message">
+                            <div class="price" :style="item.itemStyle">${{item.conf.price}}</div>
+                            <div class="level" v-if="item.player" :style="item.itemStyle">Level {{item.up}}</div>
+                            <div class="level" v-else :style="item.itemStyle"></div>
+                            <div class="name mt-1" :style="item.itemStyle">{{item.name}}</div>
+                        </div>
+                    </div>
+                    <div v-else :style="item.itemStyle">
+                        <img v-if="item.img" :src="'./images/' + item.img" alt="">
+                        <div v-if="item.type == 'VACATION'">${{round.vacationFund}}</div>
+                        <span class="mt-2">{{item.type}}</span>
+                    </div>
+                </div>
+
+                <div class="player" v-for="(play,key) of round.players" :style="play.style" :class="play.className"
+                     v-show="!play.over">
+                </div>
+
+                <!-- 这里可以包一层 transform -->
+                <span class="content" :class="'map_' + scene.road[0].level">
+
+                    <div class="dice" :class="'dice__' + round.steps" :style="round.diceRoll">
+                        <div class="one column center">
+                            <div class="row center">
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="two column center">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="three column between">
+                            <div class="row left">
+                                <div class="point"></div>
+                            </div>
+                            <div class="row center">
+                                <div class="point"></div>
+                            </div>
+                            <div class="row right">
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="four column between">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="five column between">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row center">
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="six column between">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>Current game round : {{round.rounds}}</p>
+
+                    <div class="btnList">
+                        <button class="btn btn-outline-primary mr-1" @click="roll()"
+                                v-if="round.btnCan.rollShow">Roll</button>
+                        <button class="btn btn-outline-primary mr-1" @click="endTurn()" v-show="round.btnCan.endTurn">EndTurn</button>
+                        <button class="btn btn-outline-primary mr-1" v-show="round.btnCan.upgrade"
+                                @click="round.upgrade()">UpGrade</button>
+                        <button class="btn btn-outline-primary mr-1" v-show="round.btnCan.buy"
+                                @click="round.buy()">Buy</button>
+                        <button class="btn btn-outline-primary mr-1" v-show="round.btnCan.free" @click="round.free()">Free</button>
+                        <button class="btn btn-outline-primary mr-1" @click="BankRupt()">BankRupt</button>
+                    </div>
+
+                    <div class="mt-2 msg fx flex-xl-column text-center" style="height: 50px;">
+                        <span v-for="item of message.messageList">{{item}}</span>
+                    </div>
+                </span>
+            </div>
+        </div>
+
+        <div class="sidebar aside">
+            <h2>Player List</h2>
+            <div>
+                <div class="thead fxAll">
+                    <div>Player</div>
+                    <div>ID</div>
+                    <div>Money</div>
+                </div>
+                <div class="fxAll" v-for="(play,key) of round.players"
+                     :class="{PlayerActive: round.index == key,playerOVer: play.over == true}">
+                    <div>
+                        <div class="player btnActive" :class="'bg-' + play.id"></div>
+                    </div>
+                    <div>{{play.id}}</div>
+                    <div>${{play.money}}</div>
+                </div>
+            </div>
+
+            <h2 class="mt-5">Property List</h2>
+            <div>
+                <div class="thead fxAll">
+                    <div>Property</div>
+                    <div>Group</div>
+                    <div>Rent</div>
+                    <div>Level</div>
+                    <div>Price</div>
+                    <div>Sell</div>
+                </div>
+                <div class="fxAll" v-for="(item,index) in round.players[round.index].buildings">
+                    <div>{{item.name}}</div>
+                    <div>{{item.type}}</div>
+                    <div>$ {{item.rent}}</div>
+                    <div>{{item.up}}</div>
+                    <div>{{item.conf.price}}</div>
+                    <div>
+                        <button class="btn btn-primary" @click="item.player.sell(index)">Sell</button>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="mt-5">ReCords List</h2>
+            <div class="mt-2 fx flex-xl-column overflow-auto" style="height:140px;">
+                <ul class="mt-2" style="height: 150px">
+                    <li v-for="item of message.messageList">{{item}}</li>
+                </ul>
+            </div>
+
+            <button class="btn btn-primary w-100 mt-5" @click="backHome">Back to Home</button>
+        </div>
+    </div>
+
+    <div class="page over" :class="{'active':page === 'gameOver'}">
+        <div class="container over_main flex-xl-column">
+            <h1 class="text-center mt-3">Game Over</h1>
+            <div class="fx justify-content-between text-center mt-5" v-if="round && round.players">
+                <div>
+                    <h1>Winner</h1>
+                    <h2>Player {{round.winner?.id}}</h2>
+                </div>
+
+                <div>
+                    <h1>Rounds</h1>
+                    <h2>{{round.rounds}}</h2>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button class="btn btn-primary w-100" @click="toGame(GameMapData.choose)">Player Again</button>
+                <button class="btn btn-primary w-100 mt-4" @click="toMapList('mapList')">Map List</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-show="modals.property.show" class="w-100 h-100 position-fixed"
+         style="background: rgba(0,0,0,.3); top:0;display: none;">
+        <div class="modal-dialog bg-white">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Set {{propertyInfo.type}} Info </h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group">
+                        <label for="inputAddress">Property's Price</label>
+                        <input type="number" class="form-control" id="inputAddress" v-model="propertyInfo.price">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-4" v-for="(rent,key) of propertyInfo.rent" :key="key">
+                            <label>Level{{key + 1}}'s Rent</label>
+                            <input type="number" class="form-control" v-model="propertyInfo.rent[key]">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6" v-for="(upgrade,key) of propertyInfo.upgrade" :key="key">
+                            <label>Upgrade to Level{{key + 2}}' amount</label>
+                            <input type="number" class="form-control" v-model="propertyInfo.upgrade[key]">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="modals.property.close()">Close</button>
+                    <button class="btn btn-primary" @click="modals.property.judge()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-show="modals.num.show" class="w-100 h-100 position-fixed"
+         style="background: rgba(0,0,0,.3); top:0;display: none;">
+        <div class="modal-dialog bg-white">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Player Number</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group">
+                        <select v-model="GameMapData.playerNum" class="w-100">
+                            <option value="2">2 Players</option>
+                            <option value="3">3 Players</option>
+                            <option value="4">4 Players</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="modals.num.close()">Close</button>
+                    <button class="btn btn-primary" @click="modals.num.judge()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-show="modals.name.show" class="w-100 h-100 position-fixed"
+         style="background: rgba(0,0,0,.3); top:0;display: none;">
+        <div class="modal-dialog bg-white">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Property Names</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group">
+                        <label for="inputAddress">Property's Price</label>
+                        <input type="text" class="form-control" v-model="propertyInfo.name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="modals.name.close()">Close</button>
+                    <button class="btn btn-primary" @click="randomName">Random</button>
+                    <button class="btn btn-primary" @click="modals.name.judge()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-show="modals.editMapData.show" class="w-100 h-100 position-fixed"
+         style="background: rgba(0,0,0,.3); top:0;display: none;">
+        <div class="modal-dialog bg-white">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Map Setting</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="form-group">
+                        <label for="inputAddress">Initial Money</label>
+                        <input type="text" class="form-control" v-model="GameMapData.initialMoney">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputAddress">Salary</label>
+                        <input type="text" class="form-control" v-model="GameMapData.salary">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="modals.editMapData.close()">Close</button>
+                    <button class="btn btn-primary" @click="modals.editMapData.judge()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="./src/game.js" type="module"></script>
+</body>
+</html>

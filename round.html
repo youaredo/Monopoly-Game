@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.js"></script>
+    <script>
+        const {createApp,ref,reactive} = Vue;
+    </script>
+</head>
+<body>
+    <div id="app">
+        <div class="page active">
+            <div class="container">
+                    <div v-if="scene">
+                        <div v-for="(item,name) in scene.road" :class="item.className" class="item" :style="item.style" @click="scene.clickEvent(item)">
+                            <div v-if="item.isProperty">
+                                <div class="building" :style="{ transform:  item. 'none' : 'rotate(180deg)' }">
+                                    <img :src="'./images/' + item.img" alt="">
+                                </div>
+
+                                <div class="message">
+                                    <div class="price">${{item.conf.price}}</div>
+                                    <div class="level">Level {{item.up}}</div>
+                                    <div class="name mt-1">{{item.name}}</div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <img v-if="item.img" :src="'./images/' + item.img" alt="">
+                                <span class="mt-2">{{item.type}}</span>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="sidebar">
+                <button class="btn btn-primary w-100 mb-3" :class="{btnActive:item == tool}" v-for="item in conf.tools" @click="changeTool(item)">{{item}}</button>
+                <button class="btn btn-primary w-100 mb-3" @click="exportScene">Save Map</button>
+                <button class="btn btn-primary w-100 mb-3" @click="backHome">Back to Home</button>
+            </div>
+        </div>
+    </div>
+    <script src="./src/game.js" type="module"></script>
+</body>
+</html>

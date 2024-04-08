@@ -1,0 +1,274 @@
+*{
+    padding:0;
+    margin: 0;
+    font-family: "Microsoft YaHei UI";
+    box-sizing: border-box;
+}
+
+body{
+    width:100%;
+    height:100vh;
+    background:     linear-gradient(
+            to bottom right,
+            rgba(52, 152, 219, 0.3),
+            rgba(192, 57, 43, 0.1)
+    );
+}
+
+
+.page{
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height:100vh;
+    width:100%;
+    padding:0 50px;
+}
+
+.btnActive{
+    transform: scale(.8);
+}
+
+.active{
+    display: flex;
+
+}
+
+.design{
+    padding-bottom:20px;
+    /*display: none;*/
+}
+
+.design > div{
+    margin:100px;
+}
+
+.player{
+    width:50px;
+    height:50px;
+    z-index:999;
+    position: absolute;
+    background:black;
+    border-radius:50%;
+}
+
+.bg-1{
+    background:#6610f2 !important;
+}
+
+.bg-2{
+    background:#dc3545 !important;
+}
+
+.bg-3{
+    background:#28a745 !important;
+}
+
+.item{
+    width:100px;
+    height:100px;
+    border-radius:10%;
+    background:gray;
+    position: absolute;
+    font-size: 14px;
+}
+
+.container{
+    display: flex;
+    height:50vh;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.bottom{
+    transform: rotate(180deg);
+}
+
+.container>div{
+    width:700px;
+    height:100%;
+    position: relative;
+}
+
+.building{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:55px;
+    height:55px;
+    left:25%;
+    top: 0;
+    transform: translateY(-50%);
+    position: absolute;
+    border-radius:50%;
+    overflow: hidden;
+    background: grey;
+
+}
+
+.building img{
+    width:90%;
+    border-radius:50%;
+}
+
+.price{
+    color:white;
+    text-align: center;
+    width:75%;
+    border-radius:5%;
+}
+
+.level{
+    color:white;
+    text-align: center;
+    border-radius:5%;
+    height:25px;
+}
+
+.card{
+    padding:20px;
+    height:500px;
+    width: 400px;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.card-img-top{
+    height:300px;
+}
+
+ul li{
+    border-bottom:1px solid #dcdcdc;
+    padding:3px;
+    margin:5px;
+    list-style-type: none;
+}
+
+.smallMap{
+    height:100px;
+    transform: scale(.4) translate(-35%);
+}
+
+.msg{
+}
+
+.right{
+    transform: rotate(90deg);
+}
+
+.left{
+    transform: rotate(-90deg);
+}
+
+.fx{
+    display: flex;
+}
+
+.fx .item {
+    margin:0 10px;
+}
+
+.item div  img{
+    height:50px;
+}
+
+.item>div{
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+}
+
+.bg-info{
+    background:#20c997;
+}
+
+.item  .name{
+    color: black;
+}
+
+.message{
+    margin-top:70px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+}
+
+/*game.scene.html*/
+
+.content{
+    position: absolute;
+    font-size:12px;
+    top:27%;
+    transform:translate(70%);
+    flex-direction: column;
+}
+
+.content,.btnList{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btnList{
+    width:300px;
+}
+
+.aside>div{
+    width:400px;
+    border:2px solid #dcdcdc;
+}
+
+.aside>div>div>div{
+    flex:1;
+}
+
+.h-px{
+    height:200px;
+}
+
+.thead{
+    height:50px;
+    background: #dcdcdc;
+}
+
+.PlayerActive{
+    border:2px solid black;
+}
+
+.fxAll,.fxAll>div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fxAll>div{
+    height:60px;
+}
+
+.aside>div{
+    flex:1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.msg{
+    height:100px;
+    overflow: auto;
+}
+
+.msg li{
+    list-style-type: none;
+}
+
+.msg li:nth-child(n){
+    color:gray;
+}
+.msg::-webkit-scrollbar,.h-px::-webkit-scrollbar{
+    display: none;
+}

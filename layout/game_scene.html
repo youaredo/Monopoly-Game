@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/dice.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.js"></script>
+    <script>
+        const {createApp,ref,reactive} = Vue;
+    </script>
+</head>
+<body>
+    <div id="app">
+        <div class="page active">
+            <div class="container">
+                <div v-if="scene">
+
+                    <div class="player bg-1" style="top:25px;left:25px"></div>
+                    <div class="player bg-2" style="top:325px;left:25px"></div>
+                    <div class="player bg-3" style="top:25px;left:625px"></div>
+                    <div v-for="(item,name) in scene.road" :class="item.className" class="item" :style="item.style" @click="scene.clickEvent(item)">
+                        <div v-if="item.isProperty">
+                            <div class="building">
+                                <img :src="'./images/' + item.img" alt="">
+                            </div>
+
+                            <div class="message">
+                                <div class="price">${{item.conf.price}}</div>
+                                <div class="level" v-if="item.up">Level {{item.up}}</div>
+                                <div class="level" v-else></div>
+                                <div class="name mt-1">{{item.name}}</div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <img v-if="item.img" :src="'./images/' + item.img" alt="">
+                            <span class="mt-2">{{item.type}}</span>
+                        </div>
+                    </div>
+
+                    <span class="content">
+
+                    <div class="dice dice__one">
+                        <div class="one column center">
+                            <div class="row center">
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="two column center">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="three column between">
+                            <div class="row left">
+                                <div class="point"></div>
+                            </div>
+                            <div class="row center">
+                                <div class="point"></div>
+                            </div>
+                            <div class="row right">
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="four column between">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="five column between">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row center">
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+
+                        <div class="six column between">
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                            <div class="row between">
+                                <div class="point"></div>
+                                <div class="point"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p>Current game round : {{1}}</p>
+
+                    <div class="btnList">
+                        <button class="btn btn-outline-primary mr-1">Roll</button>
+                        <button class="btn btn-outline-primary mr-1">BackRupt</button>
+                        <!--                        <button class="btn btn-outline-primary mr-1">UpGrade</button>-->
+                        <!--                        <button class="btn btn-outline-primary mr-1">But</button>-->
+                        <!--                        <button class="btn btn-outline-primary mr-1">Free</button>-->
+                        <button class="btn btn-outline-primary mr-1">EndTurn</button>
+                    </div>
+
+                    <ui class="mt-2 msg">
+                        <li>Player {{1}} is go the Start</li>
+                        <li>Player {{2}} is go the jail</li>
+                        <li>Player {{3}} is buy the Beijing</li>
+                    </ui>
+                </span>
+                </div>
+            </div>
+
+            <div class="sidebar aside">
+                <h2>Player List</h2>
+                <div>
+                    <div class="thead fxAll">
+                        <div>Player</div>
+                        <div>ID</div>
+                        <div>Money</div>
+                    </div>
+
+                    <div class="fxAll">
+                        <div><div class="player bg-1 btnActive"></div></div>
+                        <div>{{1}}</div>
+                        <div>{{500}}</div>
+                    </div>
+
+                    <div class="fxAll PlayerActive">
+                        <div><div class="player bg-2 btnActive"></div></div>
+                        <div>{{2}}</div>
+                        <div>{{600}}</div>
+                    </div>
+
+                    <div class="fxAll">
+                        <div><div class="player bg-3 btnActive"></div></div>
+                        <div>{{3}}</div>
+                        <div>{{300}}</div>
+                    </div>
+                </div>
+
+                <h2 class="mt-5">Property List</h2>
+                <div>
+                    <div class="thead fxAll">
+                        <div>Property</div>
+                        <div>Group</div>
+                        <div>Rent</div>
+                        <div>Level</div>
+                        <div>Sell</div>
+                    </div>
+
+                    <div class="fxAll">
+                        <div>Beijing</div>
+                        <div>Condo</div>
+                        <div>$220</div>
+                        <div>0</div>
+                        <div><button class="btn btn-primary">Sell</button></div>
+                    </div>
+                </div>
+
+                <h2 class="mt-5">ReCords List</h2>
+                <div>
+                    <ul class="mt-2 msg">
+                        <li>Player {{1}} is go the Start</li>
+                        <li>Player {{2}} is go the jail</li>
+                        <li>Player {{3}} is buy the Beijing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../layout/src/game.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.js"></script>
+    <script>
+        const {createApp,ref,reactive} = Vue;
+    </script>
+</head>
+<body>
+    <div id="app">
+        <div class="page active fx flex-xl-column">
+            <div class="container overflow-auto flex-xl-wrap">
+                <span class="card mr-4" v-for="item in mapList">
+                    <div class="card-img-top">
+                        <div class="smallMap">
+                            <div v-for="road in item.road" :class="road.className" class="item" :style="road.style">
+                            <div v-if="road.isProperty">
+                                <div class="building">
+                                    <img :src="'./images/' + road.img" alt="">
+                                </div>
+
+                                <div class="message">
+                                    <div class="price">${{road.conf.price}}</div>
+                                    <div class="level">Level {{road.up}}</div>
+                                    <div class="name mt-1">{{road.name}}</div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <img v-if="road.img" :src="'./images/' + road.img" alt="">
+                                <span class="mt-2">{{road.type}}</span>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        <li>InitialMoney: ${{item.initialMoney == 0? 500:item.initialMoney}}</li>
+                        <li>Salary: {{item.salary == 0 ? 500:item.salary}}</li>
+                        <li>Complexity: {{item.level == 'easy' ? 'Basic':''}} {{item.level == 'normal' ? 'Medium':''}} {{item.level == 'hard' ? 'Advanced':''}}</li>
+                        <button class="btn btn-outline-primary w-25">Start</button>
+                    </ul>
+                </span>
+            </div>
+            <button class="btn btn-primary w-25">Back to Home</button>
+        </div>
+    </div>
+    <script src="../layout/src/game.js" type="module"></script>
+</body>
+</html>
